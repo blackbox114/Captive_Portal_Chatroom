@@ -5,10 +5,17 @@
 制作完[钓鱼wifi](https://github.com/blackbox114/Captive_Portal)之后，决定重新捡起初中时希望建造本地聊天网络的梦想，开始了wifi聊天室的制作。DNSServer方面参考了[popup-chat](https://github.com/tlack/popup-chat) ，但我希望有个更友好的界面。
 ### 设计指标
 ①连接wifi即可强制弹出一个聊天窗口
+
 ②聊天信息可以像通常的聊天室一样发出后直接显示在上方
+
 ③可以设定ID，修改ID，显示ID
+
 ④可以清除聊天记录
+
 ⑤聊天数据掉电后可以保存
+
 ⑥后加入聊天的人也可以看到所有的聊天室记录
+
 ### 物料清单
 NodeMcu(ESP-12E)开发板
+【未完待续】
