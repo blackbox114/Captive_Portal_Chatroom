@@ -1,0 +1,229 @@
+<!doctype html>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小黑屋</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font: 13px Helvetica, Arial;
+    }
+
+    #chatbox {
+      background: #000;
+      padding: 3px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    #chatbox input {
+      border: 0;
+      padding: 10px;
+      width: 84%;
+      margin-right: .5%;
+    }
+
+    #chatbox button {
+      width: 15%;
+      background: rgb(130, 224, 255);
+      border: none;
+      padding: 10px;
+    }
+
+    #myModal input {
+      border: 0;
+      padding: 10px;
+      width: 64%;
+      margin-right: .5%;
+    }
+
+    #myModal button {
+      width: 35%;
+      background: rgb(130, 224, 255);
+      border: none;
+      padding: 10px;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #messages li {
+      padding: 5px 10px;
+    }
+
+    #messages li:nth-child(odd) {
+      background: #eee;
+    }
+
+    #head {
+      background: #000;
+      color: aliceblue;
+      text-align: center
+    }
+
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      padding-top: 100px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0, 0, 0);
+      background-color: rgba(0, 0, 0, 0.4);
+
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 10px;
+      border: 1px solid #888;
+      width: 60%;
+    }
+
+    .btn-warning {
+      width: 100%;
+      background: rgb(235, 38, 38);
+      border: none;
+      margin-right: 10px;
+      padding: 10px;
+      color: white;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: rgb(67, 133, 255);
+      border: none;
+      margin-top: 10px;
+      margin-right: 10px;
+      padding: 10px;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <input id="userId" autocomplete="off" placeholder="输入你的ID" /><button onclick="setName()">确定</button>
+    </div>
+  </div>
+
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <button class="btn-warning" onclick="clearMessages()">清除聊天室内消息</button><br>
+      <button class="btn-primary" onclick="closeModal('deleteModal'); openModal('myModal')">更换你的ID</button>
+    </div>
+  </div>
+
+
+  <div id="head" ondblclick="openModal('deleteModal')">
+    <h2>小黑屋</h2>
+  </div>
+  <ul id="messages"></ul>
+  <div id="chatbox">
+    <input id="m" autocomplete="off" placeholder="随便聊聊..." /><button onclick="sendMessage()">发送</button>
+    </form>
+
+    <script>
+      var username;
+      openModal("myModal");
+
+
+      function appendToMessages(message) {
+        var ul = document.getElementById("messages");
+        var li = document.createElement("li");
+        li.appendChild(document.createTextNode(message));
+        li.setAttribute("id", "element4");
+        ul.appendChild(li);
+      }
+
+      function setName(name) {
+        username = document.getElementById("userId").value;
+        closeModal("myModal");
+        startReadingMessages();
+      }
+
+      function startReadingMessages() {
+        setInterval(function () { readMessages(); }, 1500);
+      }
+
+      function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "none";
+      }
+
+      function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        modal.style.display = "block";
+      }
+
+      function sendMessage() {
+        var messageBox = document.getElementById("m");
+        var message = username + ": " + messageBox.value;
+        xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://10.10.10.1/sendMessage');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            messageBox.value = '';
+            readMessages();
+          }
+          else if (xhr.status !== 200) {
+            alert('Request failed.  Returned status of ' + xhr.status);
+          }
+        };
+        xhr.send(encodeURI('message=' + message));
+      }
+
+      function readMessages() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://10.10.10.1/readMessages');
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            document.getElementById("messages").innerHTML = '';
+            var msgArr = xhr.responseText.toString().replace(/\n$/, "").split(/\n/);
+            msgArr.forEach(function (entry) {
+              appendToMessages(entry);
+            });
+          }
+          else {
+            alert('Request failed.  Returned status of ' + xhr.status);
+          }
+        };
+        xhr.send();
+      }
+
+      function clearMessages() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://10.10.10.1/clearMessages');
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            closeModal("deleteModal");
+          }
+          else {
+            alert('Request failed.  Returned status of ' + xhr.status);
+          }
+        };
+        xhr.send();
+      }
+
+    </script>
+</body>
+
+</html>
