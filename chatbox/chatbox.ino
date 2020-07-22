@@ -27,7 +27,7 @@ int num = 0;
 
 const String      messagesFile = "/messages.txt";
 const String      chatFile = "/chat.html";
-const char*       wifiName = "小黑屋";
+const char*       wifiName = "陈俊霏的个人聊天室";
 String            chatHtml;
 
 IPAddress         apIP(10, 10, 10, 1);//定死的IP地址
